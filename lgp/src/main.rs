@@ -1,3 +1,5 @@
+use std::process::exit;
+
 use env::{cartpole::CartPole, Environment, pcgrng::PCGRng};
 
 use crate::progamme::Programme;
@@ -16,8 +18,22 @@ fn main() {
     let mut env = CartPole::default();
     let mut total_reward = 0.0;
 
-    let default_temp = Programme {nom: "OuiOui", prog64: 0, score: 0.};
-    let mut population: [Programme; NB_POPULATION] = [default_temp; NB_POPULATION];
+    let mut test_prog = Programme::init("MyTest".to_string(), 0b1110001101);
+    println!("{:?}", test_prog);
+    println!("{:?}", test_prog.getOut(0));
+    println!("{:?}", test_prog.getOp(0));
+    println!("{:?}", test_prog.getInA(0));
+    println!("{:?}", test_prog.getInB(0));
+    
+
+
+
+    exit(0);
+    //Init the population
+    let mut population: [Programme; NB_POPULATION] = std::array::from_fn( |i|{
+        Programme::default()
+    });
+
 
     let mut iterations = 0;
 
