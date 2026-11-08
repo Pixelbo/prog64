@@ -1,0 +1,22 @@
+
+
+
+Output                          => 2Bits
+Opération + - / *               => 2Bits
+Registre 4                      => 2Bits
+Input : x x_dot theta theta_dot => 2Bits
+
+
+Faire interpréteur
+
+U64 1 à 100
+
+Boucle de test (Reward indicateur de perf)
+
+evaluation 500 boucle sur le même prog/ligne -> Reward
+
+Selection   (20% des meilleurs)
+
+Mutation -> (Random 0 -> 1 | 1 -> 0)
+
+OUT OP A B (utilisation notation préfixe (la polonaise) )
