@@ -3,8 +3,8 @@
 
 Output                          => 2Bits
 Opération + - / *               => 2Bits
-Registre 4                      => 2Bits
-Input : x x_dot theta theta_dot => 2Bits
+Registre 4                      => 3Bits
+Input : x x_dot theta theta_dot => 3Bits
 
 
 Faire interpréteur
