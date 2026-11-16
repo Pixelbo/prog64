@@ -20,12 +20,12 @@ enum OpCode {
 }
 
 impl OpCode {
-    fn from_i16(value: i16) -> Option<Self> {
+    fn from_u16(value: Option<u16>) -> Option<Self> {
         match value {
-            0 => Some(OpCode::Add),
-            1 => Some(OpCode::Minus),
-            2 => Some(OpCode::Mult),
-            3 => Some(OpCode::Div),
+            Some(0) => Some(OpCode::Add),
+            Some(1) => Some(OpCode::Minus),
+            Some(2) => Some(OpCode::Mult),
+            Some(3) => Some(OpCode::Div),
             _ => None,
         }
     }
@@ -40,17 +40,21 @@ pub enum Operand {
 
 impl Operand {
 
-    pub fn from_i16(valeur_brute: i16) -> Self {
+    pub fn from_u16(valeur_brute: Option<u16>) -> Self {
         // 100 = 4 (décimal) -> Registre 0
         // 000 = 0 (décimal) -> Input 0
-        
-        let est_registre = (valeur_brute & 0b100) != 0; 
-        let index = (valeur_brute & 0b011) as usize;
+        match valeur_brute {
+            None   => panic!("Err from_u16 no val"),
+            Some(val) => {
+                let est_registre = (val & 0b100) != 0; 
+                let index = (val & 0b011) as usize;
 
-        if est_registre {
-            Operand::Reg(index)
-        } else {
-            Operand::Input(index)
+                if est_registre {
+                    Operand::Reg(index)
+                } else {
+                    Operand::Input(index)
+                }
+            }
         }
     }
 }
@@ -69,12 +73,6 @@ impl Machine {
             Operand::Input(idx) => self.i[idx],
         }
     }
-    fn ecrire_valeur(&mut self, operand: Operand, valeur: i32) {
-        match operand {
-            Operand::Reg(idx) => self.r[idx] = valeur,
-            Operand::Input(_) => {}
-        }
-    }
 
     pub fn executer_ligne(&mut self, prog: &Programme, ligne: u64) {
         
@@ -83,28 +81,27 @@ impl Machine {
         let encod_out = prog.getOut(ligne);
         let encod_ina = prog.getInA(ligne);
         let encod_inb = prog.getInB(ligne);
-
-        if encod_op == -1 {
-            return;
-        }
         
-        let op = OpCode::from_i16(encod_op).expect("OpCode invalide");
-        let val_a = Operand::from_i16(encod_ina);
-        let val_b = Operand::from_i16(encod_inb);
-        let dest = encod_out as usize;
+        let op = OpCode::from_u16(encod_op).expect("Opcode invalide");
+        let val_a = Operand::from_u16(encod_ina);
+        let val_b = Operand::from_u16(encod_inb);
+        let dest = match encod_out {
+            Some(val) => val as usize,
+            None => panic!("Err encod_out no val")
+        };
 
-        let read_valA = self.read_val(val_a);
-        let read_valB = self.read_val(val_b);
+        let read_val_a = self.read_val(val_a);
+        let read_val_b = self.read_val(val_b);
 
         let resultat = match op {
-            OpCode::Add   => read_valA + read_valB,
-            OpCode::Minus => read_valA - read_valB,
-            OpCode::Mult  => read_valA * read_valB,
+            OpCode::Add   => read_val_a + read_val_b,
+            OpCode::Minus => read_val_a - read_val_b,
+            OpCode::Mult  => read_val_a * read_val_b,
             OpCode::Div   => {
-                if read_valB == 0 {
-                    0
+                if read_val_b == 0 {
+                    panic!("No division by 0")
                 } else {
-                    read_valA / read_valB
+                    read_val_a / read_val_b
                 }
             }         
         };
