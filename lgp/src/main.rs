@@ -2,11 +2,13 @@ use std::process::exit;
 
 use env::{cartpole::CartPole, Environment, pcgrng::PCGRng};
 
-use crate::progamme::Programme;
+use crate::{progamme::Programme, selector::{Selector, Truncation}};
 
 
 pub mod interpretor;
 pub mod progamme;
+pub mod selector;
+
 const NB_GENERATIONS: usize = 100;
 const NB_POPULATION: usize = 100;
 
@@ -26,15 +28,20 @@ fn main() {
     println!("{:?}", test_prog.getInB(0));
     
 
-
-
-    exit(0);
     //Init the population
     let mut population: [Programme; NB_POPULATION] = std::array::from_fn( |i|{
         Programme::default()
     });
 
+    
+    let mut selection_method = Truncation{portion:0.1};
 
+    let mut selected = selection_method.select(&mut population).unwrap();
+
+    println!("{:?}", selected);
+
+    exit(0);
+    
     let mut iterations = 0;
 
     println!("I\taction\treward\tdone\tx\tx_dot\ttheta\ttheta_dot");
