@@ -7,6 +7,7 @@ use crate::progamme::Programme;
 
 pub mod interpretor;
 pub mod progamme;
+pub mod mutation;
 const NB_GENERATIONS: usize = 100;
 const NB_POPULATION: usize = 100;
 
