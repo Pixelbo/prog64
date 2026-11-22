@@ -51,12 +51,12 @@ impl Programme {
         (out >> PROG_LINE_OUT_POS).try_into().ok()
     }
 
-    pub fn getInA(&self,ligne: u64) -> i16{
-        if ligne>PROG_NB_LINE {return -1;}
+    pub fn getInA(&self,ligne: u64) -> Option<u16>{
+        if ligne>PROG_NB_LINE {return None;}
         //Apply the mask
         let ina = (self.prog64>>(ligne*PROG_LINE_WIDTH)) & PROG_LINE_INA_MASK;
         //Convert the value
-        (ina >> PROG_LINE_INA_POS).try_into().unwrap()
+        (ina >> PROG_LINE_INA_POS).try_into().ok()
     }
 
     pub fn getInB(&self,ligne: u64) -> Option<u16>{
