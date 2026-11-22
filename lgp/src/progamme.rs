@@ -35,7 +35,7 @@ impl Programme {
         Programme { nom, prog64: prog, score: 0. }
     }
 
-    pub fn getOp(&self, ligne: u64) -> Option<u16>{
+    pub fn get_op(&self, ligne: u64) -> Option<u16>{
         if ligne>PROG_NB_LINE {return None;}
         //Apply the mask
         let ope = (self.prog64>>(ligne*PROG_LINE_WIDTH)) & PROG_LINE_OP_MASK;
@@ -43,7 +43,7 @@ impl Programme {
         (ope >> PROG_LINE_OP_POS).try_into().ok()
     }
 
-    pub fn getOut(&self,ligne: u64) -> Option<u16>{
+    pub fn get_out(&self,ligne: u64) -> Option<u16>{
         if ligne>PROG_NB_LINE {return None;}
         //Apply the mask
         let out = (self.prog64>>(ligne*PROG_LINE_WIDTH)) & PROG_LINE_OUT_MASK;
@@ -51,7 +51,7 @@ impl Programme {
         (out >> PROG_LINE_OUT_POS).try_into().ok()
     }
 
-    pub fn getInA(&self,ligne: u64) -> Option<u16>{
+    pub fn get_in_a(&self,ligne: u64) -> Option<u16>{
         if ligne>PROG_NB_LINE {return None;}
         //Apply the mask
         let ina = (self.prog64>>(ligne*PROG_LINE_WIDTH)) & PROG_LINE_INA_MASK;
@@ -59,7 +59,7 @@ impl Programme {
         (ina >> PROG_LINE_INA_POS).try_into().ok()
     }
 
-    pub fn getInB(&self,ligne: u64) -> Option<u16>{
+    pub fn get_in_b(&self,ligne: u64) -> Option<u16>{
         if ligne>PROG_NB_LINE {return None;}
         //Apply the mask
         let inb = (self.prog64>>(ligne*PROG_LINE_WIDTH)) & PROG_LINE_INB_MASK;

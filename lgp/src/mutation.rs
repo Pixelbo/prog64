@@ -2,7 +2,7 @@
 
 use std::io;
 use rand::RngExt;
-use crate::progamme::{Programme, PROG_NB_LINE};
+use crate::progamme::{Programme};
 
 pub trait Mutator {
     fn mutate<'a>(&mut self, prog: &'a mut Programme) -> Result<&'a mut Programme, io::Error>;

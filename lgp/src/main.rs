@@ -23,10 +23,10 @@ fn main() {
 
     let mut test_prog = Programme::init("MyTest".to_string(), 0b1110001101);
     println!("{:?}", test_prog);
-    println!("{:?}", test_prog.getOut(0));
-    println!("{:?}", test_prog.getOp(0));
-    println!("{:?}", test_prog.getInA(0));
-    println!("{:?}", test_prog.getInB(0));
+    println!("{:?}", test_prog.get_out(0));
+    println!("{:?}", test_prog.get_op(0));
+    println!("{:?}", test_prog.get_in_a(0));
+    println!("{:?}", test_prog.get_in_b(0));
     
 
     //Init the population
