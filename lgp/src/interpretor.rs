@@ -77,10 +77,10 @@ impl Machine {
     pub fn executer_ligne(&mut self, prog: &Programme, ligne: u64) {
         
         // Val from programme
-        let encod_op = prog.getOp(ligne);
-        let encod_out = prog.getOut(ligne);
-        let encod_ina = prog.getInA(ligne);
-        let encod_inb = prog.getInB(ligne);
+        let encod_op = prog.get_op(ligne);
+        let encod_out = prog.get_out(ligne);
+        let encod_ina = prog.get_in_a(ligne);
+        let encod_inb = prog.get_in_b(ligne);
         
         let op = OpCode::from_u16(encod_op).expect("Opcode invalide");
         let val_a = Operand::from_u16(encod_ina);
