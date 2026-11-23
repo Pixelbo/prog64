@@ -1,4 +1,8 @@
+use std::fmt;
+
 use rand::{RngExt};
+
+use crate::interpretor::{OpCode, Operand::{self, Input, Reg}};
 
 /**
  * Une ligne de programme:
@@ -70,7 +74,7 @@ impl Programme {
 
 impl Default for Programme {
     fn default() -> Self {
-        let name = petname::petname(1, "-").unwrap();
+        let name = petname::petname(1, "-").unwrap() + "_000";
         let mut rng = rand::rng();
         Programme {
             nom: name,
@@ -80,7 +84,74 @@ impl Default for Programme {
     }
 }
 
-//TODO: écrire tests
+impl fmt::Display for Programme {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let _ = write!(f, "------------------------\n");
+        let _ = write!(f, "Name: {} Score: {}\n", self.nom, self.score);
+        //let _ = write!(f, "{:b}\n", self.prog64);
+
+        //Print programm lines
+        for i in 0..PROG_NB_LINE{
+            //Get out op
+            let operand_out = match self.get_out(i) {
+                    Some(0) => "R0",
+                    Some(1) => "R1",
+                    Some(2) => "R2",
+                    Some(3) => "R3",
+                    Null  => ".."
+            };
+
+            let operand_ina = match Operand::from_u16(self.get_in_a(i)) {
+                    Reg(result) => match result {
+                        0 => "R0",
+                        1 => "R1",
+                        2 => "R2",
+                        3 => "R3",
+                        4..  => ".."
+                    },
+                    Input(result) => match result {
+                        0 => "I0",
+                        1 => "I1",
+                        2 => "I2",
+                        3 => "I3",
+                        4..  => ".."
+                    }
+            };
+
+            let operand_inb = match Operand::from_u16(self.get_in_b(i)) {
+                    Reg(result) => match result {
+                        0 => "R0",
+                        1 => "R1",
+                        2 => "R2",
+                        3 => "R3",
+                        4..  => ".."
+                    },
+                    Input(result) => match result {
+                        0 => "I0",
+                        1 => "I1",
+                        2 => "I2",
+                        3 => "I3",
+                        4..  => ".."
+                    }
+            };
+
+            //Get opcode
+            let opcode = match OpCode::from_u16(self.get_op(i)) {
+                Some(OpCode::Add) => "+",
+                Some(OpCode::Minus) => "-",
+                Some(OpCode::Mult) => "*",
+                Some(OpCode::Div) => "/",
+                Null => ".."
+            };
+
+            let _ = write!(f, "{} | {} = {} {} {}\n", i, operand_out, operand_ina, opcode, operand_inb);
+        }
+
+        write!(f, "------------------------\n")
+    }
+}
+
+
 #[cfg(test)]
 mod tests {
     use super::*;
