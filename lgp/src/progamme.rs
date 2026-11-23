@@ -92,14 +92,14 @@ mod tests {
     #[test]
     fn getter_tests(){
         let myProg = creer_prog(0b10_01_101_011_01_10_010_100);
-        assert_eq!(myProg.getOut(0), Some(0b01));
-        assert_eq!(myProg.getOut(1), Some(0b10));
-        assert_eq!(myProg.getOp(0), Some(0b10));
-        assert_eq!(myProg.getOp(1), Some(0b01));
-        assert_eq!(myProg.getInA(0), Some(0b010));
-        assert_eq!(myProg.getInA(1), Some(0b101));
-        assert_eq!(myProg.getInB(0), Some(0b100));
-        assert_eq!(myProg.getInB(1), Some(0b011));
+        assert_eq!(myProg.get_out(0), Some(0b01));
+        assert_eq!(myProg.get_out(1), Some(0b10));
+        assert_eq!(myProg.get_op(0), Some(0b10));
+        assert_eq!(myProg.get_op(1), Some(0b01));
+        assert_eq!(myProg.get_in_a(0), Some(0b010));
+        assert_eq!(myProg.get_in_a(1), Some(0b101));
+        assert_eq!(myProg.get_in_b(0), Some(0b100));
+        assert_eq!(myProg.get_in_b(1), Some(0b011));
     }
 
 }
