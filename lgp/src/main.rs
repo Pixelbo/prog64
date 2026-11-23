@@ -11,7 +11,7 @@ pub mod progamme;
 pub mod selector;
 
 pub mod mutation;
-const NB_GENERATIONS: usize = 50;
+const NB_GENERATIONS: usize = 10;
 const NB_POPULATION: usize = 10;
 
 
@@ -25,7 +25,7 @@ fn main() {
     });
 
     //Select the method of selection & mutation
-    let mut selection_method = Truncation{portion:0.3};
+    let mut selection_method = Truncation{portion:0.5};
     let mut mutator = UniformMutation { taux: 0.1 };
 
     //Init the env and the cart
@@ -86,10 +86,10 @@ fn main() {
 
         //Mutate the best of the best
         for i in nb_pop_after_select+1..NB_POPULATION{            
-            let mutated_prog = mutator.mutate(&mut population[i%nb_pop_after_select]).unwrap();
-            //Change the name of the programme
-            mutated_prog.nom.replace_range(mutated_prog.nom.len() - 3.., &format!("{:03}", curr_gen+1));
-            population[i] = mutated_prog.clone();
+            let mut clone = population[i % nb_pop_after_select].clone();
+            mutator.mutate(&mut clone).unwrap();
+            clone.nom.replace_range(clone.nom.len() - 3.., &format!("{:03}", curr_gen + 1));
+            population[i] = clone; 
         }
     }
 
