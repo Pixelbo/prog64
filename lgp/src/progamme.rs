@@ -87,7 +87,7 @@ impl Default for Programme {
 impl fmt::Display for Programme {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let _ = write!(f, "------------------------\n");
-        let _ = write!(f, "\t{}\n", self.nom);
+        let _ = write!(f, "Name: {} Score: {}\n", self.nom, self.score);
         //let _ = write!(f, "{:b}\n", self.prog64);
 
         //Print programm lines

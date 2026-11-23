@@ -11,8 +11,8 @@ pub mod progamme;
 pub mod selector;
 
 pub mod mutation;
-const NB_GENERATIONS: usize = 100;
-const NB_POPULATION: usize = 100;
+const NB_GENERATIONS: usize = 50;
+const NB_POPULATION: usize = 10;
 
 
 
@@ -25,7 +25,7 @@ fn main() {
     });
 
     //Select the method of selection & mutation
-    let mut selection_method = Truncation{portion:0.2};
+    let mut selection_method = Truncation{portion:0.3};
     let mut mutator = UniformMutation { taux: 0.1 };
 
     //Todo: 2 boulces NB_GEN * NB_POP
@@ -94,5 +94,9 @@ fn main() {
     //Sort the population
     population.sort_by_key(|p| OrderedFloat(p.score));
     population.reverse();
-    println!("{}", population[0]);
+    //Print the 10 bests
+    for i in 0..10{
+        println!("{}", population[i]);
+    }
+    
 }
