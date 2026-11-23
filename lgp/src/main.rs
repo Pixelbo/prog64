@@ -1,6 +1,7 @@
 use std::process::exit;
 
 use env::{cartpole::CartPole, Environment, pcgrng::PCGRng};
+use ordered_float::OrderedFloat;
 
 use crate::{interpretor::Machine, mutation::{Mutator, UniformMutation}, progamme::Programme, selector::{Selector, Truncation}};
 
@@ -24,8 +25,8 @@ fn main() {
     });
 
     //Select the method of selection & mutation
-    let mut selection_method = Truncation{portion:0.8};
-    let mut mutator = UniformMutation { taux: 0.5 };
+    let mut selection_method = Truncation{portion:0.2};
+    let mut mutator = UniformMutation { taux: 0.1 };
 
     //Todo: 2 boulces NB_GEN * NB_POP
     for curr_gen in 0..NB_GENERATIONS{
@@ -82,14 +83,16 @@ fn main() {
         }
 
         //Mutate the best of the best
-        for i in nb_pop_after_select+1..NB_POPULATION{
-            population[i] = Programme::default();
-            
+        for i in nb_pop_after_select+1..NB_POPULATION{            
             let mutated_prog = mutator.mutate(&mut population[i%nb_pop_after_select]).unwrap();
-            //Change de name of the programme
-            mutated_prog.nom.replace_range(mutated_prog.nom.len() - 3.., &format!("{:03}", curr_gen));
+            //Change the name of the programme
+            mutated_prog.nom.replace_range(mutated_prog.nom.len() - 3.., &format!("{:03}", curr_gen+1));
             population[i] = mutated_prog.clone();
         }
     }
-    println!("{:?}", population);
+
+    //Sort the population
+    population.sort_by_key(|p| OrderedFloat(p.score));
+    population.reverse();
+    println!("{}", population[0]);
 }

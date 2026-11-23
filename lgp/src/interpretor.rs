@@ -12,7 +12,7 @@ use crate::progamme::{Programme, PROG_NB_LINE};
 
 // Décodage de l'opération
 #[derive(Debug, PartialEq, Clone, Copy)]
-enum OpCode {
+pub enum OpCode {
     Add   = 0,
     Minus = 1,
     Mult  = 2,
@@ -20,7 +20,7 @@ enum OpCode {
 }
 
 impl OpCode {
-    fn from_u16(value: Option<u16>) -> Option<Self> {
+    pub fn from_u16(value: Option<u16>) -> Option<Self> {
         match value {
             Some(0) => Some(OpCode::Add),
             Some(1) => Some(OpCode::Minus),
