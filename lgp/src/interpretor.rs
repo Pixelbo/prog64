@@ -62,12 +62,12 @@ impl Operand {
 // Execution des lignes 
 
 pub struct Machine {
-    pub r: [i32; 4], // Registres
-    pub i: [i32; 4], // Entrées
+    pub r: [f32; 4], // Registres
+    pub i: [f32; 4], // Entrées
 }
 
 impl Machine {
-    fn read_val(&self, operand: Operand)-> i32{
+    fn read_val(&self, operand: Operand)-> f32{
         match operand {
             Operand::Reg(idx) => self.r[idx],
             Operand::Input(idx) => self.i[idx],
@@ -98,8 +98,9 @@ impl Machine {
             OpCode::Minus => read_val_a - read_val_b,
             OpCode::Mult  => read_val_a * read_val_b,
             OpCode::Div   => {
-                if read_val_b == 0 {
-                    panic!("No division by 0")
+                if read_val_b == 0. {
+                    read_val_b//Panic is going to happen way too often, just leave it as such
+                    //panic!("No division by 0")
                 } else {
                     read_val_a / read_val_b
                 }
@@ -140,13 +141,13 @@ mod tests {
         let prog = crate::progamme::Programme::init(String::from("Test_Add"), prog_64_bits);
 
         let mut machine = Machine {
-            r: [0, 0, 15, 0],   // R[2] = 15
-            i: [25, 0, 0, 0],   // I[0] = 25
+            r: [0., 0., 15., 0.],   // R[2] = 15
+            i: [25., 0., 0., 0.],   // I[0] = 25
         };
 
         machine.executer_ligne(&prog, 0);
 
-        assert_eq!(machine.r[1], 40);
+        assert_eq!(machine.r[1], 40.);
     }
 
     #[test]
@@ -161,13 +162,13 @@ mod tests {
         let prog = crate::progamme::Programme::init(String::from("Test_Minus"), prog_64_bits);
 
         let mut machine = Machine {
-            r: [50, 0, 0, 0],   // R[0] = 50
-            i: [0, 12, 0, 0],   // I[1] = 12
+            r: [50., 0., 0., 0.],   // R[0] = 50
+            i: [0., 12., 0., 0.],   // I[1] = 12
         };
 
         machine.executer_ligne(&prog, 0);
 
-        assert_eq!(machine.r[2], 38);
+        assert_eq!(machine.r[2], 38.);
     }
 
     #[test]
@@ -182,13 +183,13 @@ mod tests {
         let prog = crate::progamme::Programme::init(String::from("Test_Mult"), prog_64_bits);
 
         let mut machine = Machine {
-            r: [0, 0, 0, 0],    // R[3] va recevoir le résultat
-            i: [0, 0, 6, 7],    // I[2] = 6, I[3] = 7
+            r: [0., 0., 0., 0.],    // R[3] va recevoir le résultat
+            i: [0., 0., 6., 7.],    // I[2] = 6, I[3] = 7
         };
 
         machine.executer_ligne(&prog, 0);
 
-        assert_eq!(machine.r[3], 42);
+        assert_eq!(machine.r[3], 42.);
     }
 
     #[test]
@@ -203,14 +204,14 @@ mod tests {
         let prog = crate::progamme::Programme::init(String::from("Test_Div"), prog_64_bits);
 
         let mut machine = Machine {
-            r: [0, 0, 0, 2],    // R[3] = 2
-            i: [0, 0, 10, 0],   // I[2] = 10
+            r: [0., 0., 0., 2.],    // R[3] = 2
+            i: [0., 0., 10., 0.],   // I[2] = 10
         };
 
         machine.executer_ligne(&prog, 0);
 
-        assert_eq!(machine.r[0], 5);
-        assert_eq!(machine.r[3], 2);    
+        assert_eq!(machine.r[0], 5.);
+        assert_eq!(machine.r[3], 2.);    
     }
 
     #[test]
@@ -225,13 +226,13 @@ mod tests {
         // Ligne 2 : R[2] = R[1] - I[3] -> 25 - 10 = 15
         let l2: u64 = 0b10_01_101_011; 
 
-        // Ligne 3 : R[3] = R[2] / I[0] -> 15 / 2 = 7
+        // Ligne 3 : R[3] = R[2] / I[0] -> 15 / 2 = 7.5
         let l3: u64 = 0b11_11_110_000; 
 
-        // Ligne 4 : R[0] = R[3] + R[3] -> 7 + 7 = 14 (Écrase l'ancienne valeur de R[0])
+        // Ligne 4 : R[0] = R[3] + R[3] -> 7.5 + 7.5 = 15 (Écrase l'ancienne valeur de R[0])
         let l4: u64 = 0b00_00_111_111; 
 
-        // Ligne 5 : R[1] = R[0] * I[0] -> 14 * 2 = 28 (Écrase l'ancienne valeur de R[1])
+        // Ligne 5 : R[1] = R[0] * I[0] -> 15 * 2 = 30 (Écrase l'ancienne valeur de R[1])
         let l5: u64 = 0b01_10_100_000; 
 
         // Assemblage
@@ -241,18 +242,18 @@ mod tests {
 
         // Initialisation de la machine
         let mut machine = Machine {
-            r: [0, 0, 0, 0],
-            i: [2, 3, 5, 10], // I[0]=2, I[1]=3, I[2]=5, I[3]=10
+            r: [0., 0., 0., 0.],
+            i: [2., 3., 5., 10.], // I[0]=2, I[1]=3, I[2]=5, I[3]=10
         };
 
         // Exécution de TOUT le programme 
         machine.executer_programme(&prog);
 
         // Vérification de l'état final des 4 registres
-        assert_eq!(machine.r[0], 14);
-        assert_eq!(machine.r[1], 28);
-        assert_eq!(machine.r[2], 15);
-        assert_eq!(machine.r[3], 7);
+        assert_eq!(machine.r[0], 15.);
+        assert_eq!(machine.r[1], 30.);
+        assert_eq!(machine.r[2], 15.);
+        assert_eq!(machine.r[3], 7.5);
     }
 
 }

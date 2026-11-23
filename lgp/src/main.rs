@@ -2,7 +2,7 @@ use std::process::exit;
 
 use env::{cartpole::CartPole, Environment, pcgrng::PCGRng};
 
-use crate::{progamme::Programme, selector::{Selector, Truncation}};
+use crate::{interpretor::Machine, progamme::Programme, selector::{Selector, Truncation}};
 
 
 pub mod interpretor;
@@ -16,18 +16,7 @@ const NB_POPULATION: usize = 100;
 
 
 fn main() {
-    let seed = 1;
-    let mut rng = PCGRng::seed(seed);
-    let mut env = CartPole::default();
-    let mut total_reward = 0.0;
 
-    let mut test_prog = Programme::init("MyTest".to_string(), 0b1110001101);
-    println!("{:?}", test_prog);
-    println!("{:?}", test_prog.get_out(0));
-    println!("{:?}", test_prog.get_op(0));
-    println!("{:?}", test_prog.get_in_a(0));
-    println!("{:?}", test_prog.get_in_b(0));
-    
 
     //Init the population
     let mut population: [Programme; NB_POPULATION] = std::array::from_fn( |i|{
@@ -39,29 +28,40 @@ fn main() {
 
     let mut selected = selection_method.select(&mut population).unwrap();
 
-    println!("{:?}", selected);
-
-    exit(0);
     
-    let mut iterations = 0;
-
-    println!("I\taction\treward\tdone\tx\tx_dot\ttheta\ttheta_dot");
     //Todo: 2 boulces NB_GEN * NB_POP
-    loop {
-        
-        let action: f32 = (rng.next_u32() % 4) as f32;
+    
+    for curr_prog in &mut population {
+        //Evolution is Action -> Selection -> Mutation (repopulation) -> ...
 
-        
-        let (curr_state, reward, done) = env.step(action, &mut rng);
+        //Init the env and the cart
+        let seed = 1;
+        let mut rng = PCGRng::seed(seed);
+        let mut env = CartPole::default();
+        let mut total_reward = 0.0;
 
-        println!("{}\t{}\t{}\t{}\t{:.2}\t{:.2}\t{:.2}\t{:.2}",iterations ,action, reward, done, curr_state[0], curr_state[1], curr_state[2], curr_state[3]);
+        //Init the machine (that hold the registers) and the program
+        let mut machine = Machine {
+            r: [0., 0., 0., 0.],
+            i: [0., 0., 0., 0.],
+        };
 
-        total_reward += reward;
-        iterations+=1;
-        if done {
-            break;
+        let mut action: f32 = (rng.next_u32() % 4) as f32;
+        loop {
+            let (curr_state, reward, done) = env.step(action, &mut rng);
+
+            machine.i = curr_state; //Copy the inputs
+            machine.executer_programme(curr_prog);
+
+            action = (machine.r[0] % 4.) as f32;
+
+            total_reward += reward;
+            if done {
+                break;
+            }
         }
+
+        curr_prog.score += total_reward;
     }
-    //Faire logging et recap
-    println!("Total reward: {}", total_reward)
+    println!("{:?}", population);
 }
