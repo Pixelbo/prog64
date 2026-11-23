@@ -28,16 +28,18 @@ fn main() {
     let mut selection_method = Truncation{portion:0.3};
     let mut mutator = UniformMutation { taux: 0.1 };
 
+    //Init the env and the cart
+    let seed = 1;
+    let mut rng = PCGRng::seed(seed);
+    let mut env = CartPole::default();
+
     //Todo: 2 boulces NB_GEN * NB_POP
     for curr_gen in 0..NB_GENERATIONS{
         //Evolution is Action -> Selection -> Mutation (repopulation) -> .
         //ACTION: One generation loop
         for curr_prog in &mut population {
 
-            //Init the env and the cart
-            let seed = 1;
-            let mut rng = PCGRng::seed(seed);
-            let mut env = CartPole::default();
+            env.reset(&mut rng);
             let mut total_reward = 0.0;
 
             //Reset the score of the program between generations 
