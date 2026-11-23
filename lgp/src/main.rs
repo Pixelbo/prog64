@@ -85,7 +85,7 @@ fn main() {
         }
 
         //Mutate the best of the best
-        for i in nb_pop_after_select+1..NB_POPULATION{            
+        for i in nb_pop_after_select..NB_POPULATION{            
             let mut clone = population[i % nb_pop_after_select].clone();
             mutator.mutate(&mut clone).unwrap();
             clone.nom.replace_range(clone.nom.len() - 3.., &format!("{:03}", curr_gen + 1));
