@@ -24,69 +24,72 @@ fn main() {
     });
 
     //Select the method of selection & mutation
-    let mut selection_method = Truncation{portion:0.1};
+    let mut selection_method = Truncation{portion:0.8};
     let mut mutator = UniformMutation { taux: 0.5 };
 
     //Todo: 2 boulces NB_GEN * NB_POP
-    //Evolution is Action -> Selection -> Mutation (repopulation) -> .
-    //ACTION: One generation loop
-    for curr_prog in &mut population {
+    for curr_gen in 0..NB_GENERATIONS{
+        //Evolution is Action -> Selection -> Mutation (repopulation) -> .
+        //ACTION: One generation loop
+        for curr_prog in &mut population {
 
-        //Init the env and the cart
-        let seed = 1;
-        let mut rng = PCGRng::seed(seed);
-        let mut env = CartPole::default();
-        let mut total_reward = 0.0;
+            //Init the env and the cart
+            let seed = 1;
+            let mut rng = PCGRng::seed(seed);
+            let mut env = CartPole::default();
+            let mut total_reward = 0.0;
 
-        //Reset the score of the program between generations 
-        curr_prog.score = 0.;
+            //Reset the score of the program between generations 
+            curr_prog.score = 0.;
 
-        //Init the machine (that hold the registers) and the program
-        let mut machine = Machine {
-            r: [0., 0., 0., 0.],
-            i: [0., 0., 0., 0.],
-        };
+            //Init the machine (that hold the registers) and the program
+            let mut machine = Machine {
+                r: [0., 0., 0., 0.],
+                i: [0., 0., 0., 0.],
+            };
 
-        //The first action is random
-        let mut action: f32 = (rng.next_u32() % 4) as f32;
-        loop {
-            let (curr_state, reward, done) = env.step(action, &mut rng);
+            //The first action is random
+            let mut action: f32 = (rng.next_u32() % 4) as f32;
+            loop {
+                let (curr_state, reward, done) = env.step(action, &mut rng);
 
-            machine.i = curr_state; //Copy the inputs
-            machine.executer_programme(curr_prog);
+                machine.i = curr_state; //Copy the inputs
+                machine.executer_programme(curr_prog);
 
-            action = (machine.r[0]) as f32;
+                action = (machine.r[0]) as f32;
 
-            total_reward += reward;
-            if done {
-                break;
+                total_reward += reward;
+                if done {
+                    break;
+                }
             }
+
+            curr_prog.score += total_reward;
+
+        }
+        //SELECTION
+        
+        let selected = match selection_method.select(&mut population){
+            Ok(pop_select) => pop_select,
+            Err(error) => panic!("Problem selecting the population: {:?}", error),
+        };
+        //REPOPULATION / MUTATION
+        let nb_pop_after_select = selected.len();
+
+        //Copy the bests programs
+        for i in 0..nb_pop_after_select{
+            population[i] = selected[i%nb_pop_after_select].clone();
         }
 
-        curr_prog.score += total_reward;
-
-    }
-    //SELECTION
-    
-    let selected = match selection_method.select(&mut population){
-        Ok(pop_select) => pop_select,
-        Err(error) => panic!("Problem selecting the population: {:?}", error),
-    };
-    //REPOPULATION / MUTATION
-    let nb_pop_after_select = selected.len();
-
-    for i in 0..nb_pop_after_select{
-        population[i] = selected[i%nb_pop_after_select].clone();
-    }
-
-    for i in nb_pop_after_select+1..NB_POPULATION{
-        population[i] = Programme::default();
         //Mutate the best of the best
-
-        let mutated_prog = mutator.mutate(&mut population[i%nb_pop_after_select]).unwrap();
-
-        population[i] = mutated_prog.clone();
+        for i in nb_pop_after_select+1..NB_POPULATION{
+            population[i] = Programme::default();
+            
+            let mutated_prog = mutator.mutate(&mut population[i%nb_pop_after_select]).unwrap();
+            //Change de name of the programme
+            mutated_prog.nom.replace_range(mutated_prog.nom.len() - 3.., &format!("{:03}", curr_gen));
+            population[i] = mutated_prog.clone();
+        }
     }
-    
     println!("{:?}", population);
 }

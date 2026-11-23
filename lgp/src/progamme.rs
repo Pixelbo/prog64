@@ -1,3 +1,5 @@
+use std::fmt;
+
 use rand::{RngExt};
 
 /**
@@ -70,7 +72,7 @@ impl Programme {
 
 impl Default for Programme {
     fn default() -> Self {
-        let name = petname::petname(1, "-").unwrap();
+        let name = petname::petname(1, "-").unwrap() + "_000";
         let mut rng = rand::rng();
         Programme {
             nom: name,
